@@ -1,2 +1,17 @@
 # SmartFlow
-Adaptive traffic signal management system using queue-based scheduling and dynamic signal allocation to reduce traffic congestion and vehicle waiting time.
+
+Adaptive Traffic Signal Management System
+
+## Features
+
+- Queue based lane management
+- Adaptive signal allocation
+- Density analysis
+- Fairness mechanism
+
+## Team Members
+
+- Dipansh
+- Anshuman
+- Nidhi
+- Aditya
