@@ -1,17 +1,23 @@
 #include "../include/SignalController.h"
 
-int SignalController::getGreenSignal(int north, int south, int east, int west)
+int SignalController::selectLane(std::vector<Lane>& lanes)
 {
-    int maxLane = north;
+    int bestLane=0;
+    int bestScore=-1;
 
-    if(south > maxLane)
-        maxLane = south;
+    for(int i=0;i<lanes.size();i++)
+    {
+        int score=
+        lanes[i].getDensityScore()
+        +
+        lanes[i].getStarvationCount()*5;
 
-    if(east > maxLane)
-        maxLane = east;
+        if(score>bestScore)
+        {
+            bestScore=score;
+            bestLane=i;
+        }
+    }
 
-    if(west > maxLane)
-        maxLane = west;
-
-    return maxLane;
+    return bestLane;
 }
