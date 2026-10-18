@@ -1,18 +1,36 @@
 #ifndef LANE_H
 #define LANE_H
 
-#include <queue>
-using namespace std;
+#include <vector>
+#include "Vehicle.h"
 
 class Lane
 {
 private:
-    queue<int> vehicles;
+    int laneID;
+    std::vector<Vehicle> vehicles;
+    int starvationCount;
 
 public:
-    void addVehicle(int id);
-    void removeVehicle();
+    Lane(int id);
+
+    void addVehicle(Vehicle v);
+
+    void removeVehicles();
+
+    int getDensityScore();
+
+    int getTotalCrossingTime();
+
     int getVehicleCount();
+
+    void increaseStarvation();
+
+    void resetStarvation();
+
+    int getStarvationCount();
+
+    int getLaneID();
 };
 
 #endif
