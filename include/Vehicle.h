@@ -1,14 +1,21 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
+#include <string>
+
 class Vehicle
 {
 private:
-    int arrivalTime;
+    std::string type;
+    int weight;
+    int crossingTime;
 
 public:
-    Vehicle(int time);
-    int getArrivalTime();
+    Vehicle(std::string type,int weight,int crossingTime);
+
+    int getWeight();
+    int getCrossingTime();
+    std::string getType();
 };
 
 #endif
