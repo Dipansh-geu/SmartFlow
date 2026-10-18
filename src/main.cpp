@@ -50,7 +50,7 @@ int main()
         lane4
     };
 
-    // Initial traffic
+
     for(int i=0;i<4;i++)
     {
         int vehicleCount =
@@ -108,10 +108,8 @@ int main()
         << lanes[winner].getLaneID()
         << endl;
 
-        // All vehicles pass
         lanes[winner].removeVehicles();
 
-        // Update starvation
         for(int i=0;i<lanes.size();i++)
         {
             if(i==winner)
@@ -120,7 +118,6 @@ int main()
                 lanes[i].increaseStarvation();
         }
 
-        // New arriving vehicles
         for(int i=0;i<4;i++)
         {
             int arrivals =
