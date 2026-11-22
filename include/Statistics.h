@@ -1,48 +1,43 @@
 #ifndef STATISTICS_H
 #define STATISTICS_H
 
-#include <vector>
 #include <fstream>
-
+#include <vector>
 #include "Lane.h"
 
-class Statistics
-{
+class Statistics {
 private:
     std::ofstream report;
-
-    int fixedWaitingTime;
-    int smartWaitingTime;
+    double fixedGreenSecondsTotal;
+    double smartGreenSecondsTotal;
 
 public:
-
     Statistics();
-
     ~Statistics();
 
     void logSimulation(
         int simulationNo,
-        std::vector<Lane>& lanes,
-        int selectedLane
+        const std::vector<Lane>& lanes,
+        int selectedLane,
+        int smartGreenSeconds
     );
 
-    void addFixed(int value);
-
-    void addSmart(int value);
+    void addFixed(double seconds);
+    void addSmart(double seconds);
 
     void saveComparisonCSV(
         int simulationNo,
-        int fixedTime,
-        int smartTime
+        double fixedSeconds,
+        double smartSeconds
     );
 
     void saveDensityCSV(
         int simulationNo,
-        std::vector<Lane>& lanes,
+        const std::vector<Lane>& lanes,
         int winner
     );
 
-    void printReport(int simulations);
+    void printReport(int completedSimulations);
 };
 
 #endif
