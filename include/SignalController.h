@@ -4,10 +4,17 @@
 #include <vector>
 #include "Lane.h"
 
-class SignalController
-{
+class SignalController {
 public:
-    int selectLane(std::vector<Lane>& lanes);
+    explicit SignalController(double starvationThreshold = 180.0);
+
+    int selectLane(
+        const std::vector<Lane>& lanes,
+        int previousLane
+    ) const;
+
+private:
+    double starvationThresholdSeconds;
 };
 
 #endif
