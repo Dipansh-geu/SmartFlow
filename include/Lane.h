@@ -4,33 +4,35 @@
 #include <vector>
 #include "Vehicle.h"
 
-class Lane
-{
+class Lane {
 private:
     int laneID;
     std::vector<Vehicle> vehicles;
-    int starvationCount;
+    double starvationTimeSeconds;
 
 public:
-    Lane(int id);
+    explicit Lane(int id);
 
-    void addVehicle(Vehicle v);
-
+    void addVehicle(const Vehicle& v);
     void removeVehicles();
 
-    int getDensityScore();
+    double getTotalPCU() const;
+    int getTotalCrossingTime() const;
+    int getVehicleCount() const;
 
-    int getTotalCrossingTime();
-
-    int getVehicleCount();
-
-    void increaseStarvation();
-
+    void increaseStarvation(double elapsedSeconds);
     void resetStarvation();
+    double getStarvationTime() const;
 
-    int getStarvationCount();
+    int getLaneID() const;
+    const std::vector<Vehicle>& getVehicles() const;
 
-    int getLaneID();
+    int clearVehiclesWithin(
+        int greenSeconds,
+        double serviceTime,
+        double& waitingTotal,
+        int& throughput
+    );
 };
 
 #endif
