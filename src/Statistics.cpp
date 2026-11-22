@@ -1,232 +1,117 @@
 #include "../include/Statistics.h"
-
-#include <string>
-
+#include <iomanip>
 #include <iostream>
 
-using namespace std;
-
 Statistics::Statistics()
+    : fixedGreenSecondsTotal(0.0),
+      smartGreenSecondsTotal(0.0)
 {
-    fixedWaitingTime = 0;
-    smartWaitingTime = 0;
-
     report.open("report.txt");
 
-    report
-    << "=====================================\n";
-
-    report
-    << "SMARTFLOW TRAFFIC REPORT\n";
-
-    report
-    << "=====================================\n\n";
+    report << "=====================================\n"
+           << "SMARTFLOW TRAFFIC REPORT\n"
+           << "=====================================\n\n"
+           << "PCU = Passenger Car Unit. Green durations are recorded in seconds.\n";
 }
 
 Statistics::~Statistics()
 {
-    report.close();
+    if (report.is_open())
+    {
+        report.close();
+    }
 }
 
-void Statistics::addFixed(int value)
+void Statistics::addFixed(double seconds)
 {
-    fixedWaitingTime += value;
+    fixedGreenSecondsTotal += seconds;
 }
 
-void Statistics::addSmart(int value)
+void Statistics::addSmart(double seconds)
 {
-    smartWaitingTime += value;
+    smartGreenSecondsTotal += seconds;
 }
 
 void Statistics::logSimulation(
     int simulationNo,
-    vector<Lane>& lanes,
-    int selectedLane
+    const std::vector<Lane>& lanes,
+    int selectedLane,
+    int smartGreenSeconds
 )
 {
-    report
-    << "\n=====================================\n";
+    report << "\n=====================================\nSimulation "
+           << simulationNo << "\n=====================================\n";
 
-    report
-    << "Simulation "
-    << simulationNo
-    << "\n";
-
-    report
-    << "=====================================\n";
-
-    for(auto &lane : lanes)
+    for (const auto& lane : lanes)
     {
-        report
-        << "\nLane "
-        << lane.getLaneID()
-        << "\n";
-
-        report
-        << "Vehicles : "
-        << lane.getVehicleCount()
-        << "\n";
-
-        report
-        << "Density Score : "
-        << lane.getDensityScore()
-        << "\n";
-
-        report
-        << "Crossing Time : "
-        << lane.getTotalCrossingTime()
-        << "\n";
-
-        report
-        << "Starvation Count : "
-        << lane.getStarvationCount()
-        << "\n";
+        report << "\nLane " << lane.getLaneID() << "\n"
+               << "Vehicles : " << lane.getVehicleCount() << "\n"
+               << "Traffic Demand : " << lane.getTotalPCU() << " PCU\n"
+               << "Total Crossing Time : " << lane.getTotalCrossingTime() << " seconds\n"
+               << "Starvation Time : " << lane.getStarvationTime() << " seconds\n";
     }
 
-    report
-    << "\nSelected Lane : "
-    << lanes[selectedLane].getLaneID()
-    << "\n";
-
-    report
-    << "Reason : Highest Priority Score\n";
-}
-
-void Statistics::printReport(int simulations)
-{
-    double improvement =
-    (
-        (fixedWaitingTime - smartWaitingTime)
-        * 100.0
-        /
-        fixedWaitingTime
-    );
-
-    cout
-    << "\n===== FINAL REPORT =====\n";
-
-    cout
-    << "Simulations : "
-    << simulations
-    << endl;
-
-    cout
-    << "Average Fixed Waiting Time : "
-    << fixedWaitingTime / simulations
-    << endl;
-
-    cout
-    << "Average Smart Waiting Time : "
-    << smartWaitingTime / simulations
-    << endl;
-
-    cout
-    << "Improvement : "
-    << improvement
-    << "%"
-    << endl;
-
-    report
-    << "\n\n=====================================\n";
-
-    report
-    << "FINAL ANALYSIS\n";
-
-    report
-    << "=====================================\n";
-
-    report
-    << "Simulations : "
-    << simulations
-    << "\n";
-
-    report
-    << "Average Fixed Waiting Time : "
-    << fixedWaitingTime / simulations
-    << "\n";
-
-    report
-    << "Average Smart Waiting Time : "
-    << smartWaitingTime / simulations
-    << "\n";
-
-    report
-    << "Improvement : "
-    << improvement
-    << "%\n";
+    report << "\nSelected Lane : " << lanes[selectedLane].getLaneID() << "\n"
+           << "Green Duration : " << smartGreenSeconds << " seconds\n"
+           << "Selection Rule : Starvation override (if triggered), otherwise highest PCU; no consecutive lane when alternatives exist.\n";
 }
 
 void Statistics::saveComparisonCSV(
     int simulationNo,
-    int fixedTime,
-    int smartTime
+    double fixedSeconds,
+    double smartSeconds
 )
 {
-    ofstream file;
+    std::ofstream file(
+        simulationNo == 1 ? "comparison.csv" : "comparison.csv",
+        simulationNo == 1 ? std::ios::out : std::ios::app
+    );
 
-    if(simulationNo == 1)
+    if (simulationNo == 1)
     {
-        file.open("comparison.csv");
-
-        file
-        << "Simulation,"
-        << "Fixed,"
-        << "SmartFlow\n";
-    }
-    else
-    {
-        file.open(
-            "comparison.csv",
-            ios::app
-        );
+        file << "Simulation,Fixed,SmartFlow\n";
     }
 
-    file
-    << simulationNo
-    << ","
-    << fixedTime
-    << ","
-    << smartTime
-    << "\n";
-
-    file.close();
+    file << simulationNo << ','
+         << fixedSeconds << ','
+         << smartSeconds << '\n';
 }
+
 void Statistics::saveDensityCSV(
     int simulationNo,
-    std::vector<Lane>& lanes,
+    const std::vector<Lane>& lanes,
     int winner
 )
 {
-    ofstream file;
+    std::ofstream file(
+        simulationNo == 1 ? "density.csv" : "density.csv",
+        simulationNo == 1 ? std::ios::out : std::ios::app
+    );
 
-    if(simulationNo == 1)
+    if (simulationNo == 1)
     {
-        file.open("density.csv");
-
-        file
-        << "Simulation,"
-        << "Lane1,"
-        << "Lane2,"
-        << "Lane3,"
-        << "Lane4,"
-        << "Winner\n";
-    }
-    else
-    {
-        file.open(
-            "density.csv",
-            ios::app
-        );
+        file << "Simulation,Lane1_PCU,Lane2_PCU,Lane3_PCU,Lane4_PCU,Winner\n";
     }
 
-    file
-    << simulationNo << ","
-    << lanes[0].getDensityScore() << ","
-    << lanes[1].getDensityScore() << ","
-    << lanes[2].getDensityScore() << ","
-    << lanes[3].getDensityScore() << ","
-    << lanes[winner].getLaneID()
-    << "\n";
-
-    file.close();
+    file << simulationNo << ','
+         << lanes[0].getTotalPCU() << ','
+         << lanes[1].getTotalPCU() << ','
+         << lanes[2].getTotalPCU() << ','
+         << lanes[3].getTotalPCU() << ','
+         << lanes[winner].getLaneID() << '\n';
 }
+
+void Statistics::printReport(int completedSimulations)
+{
+    if (completedSimulations <= 0)
+    {
+        std::cout << "No simulations were completed.\n";
+        report << "\nNo simulations were completed.\n";
+        return;
+    }
+
+    const double fixedAverage =
+        fixedGreenSecondsTotal / completedSimulations;
+
+    const double smartAverage =
+        smart
