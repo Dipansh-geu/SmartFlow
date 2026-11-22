@@ -1,0 +1,88 @@
+import configparser
+import os
+
+
+DEFAULTS = {
+    "fixed_green_seconds": "45",
+    "minimum_green_seconds": "20",
+    "maximum_green_seconds": "90",
+
+    "yellow_seconds": "5",
+    "all_red_seconds": "3",
+
+    "starvation_threshold_seconds": "180",
+    "simulation_duration_seconds": "3600",
+
+    # SUMO-specific controller settings
+    "sumo_minimum_green_seconds": "15",
+    "sumo_maximum_green_seconds": "90",
+    "sumo_green_extension_seconds": "5",
+    "sumo_starvation_threshold_seconds": "180",
+    "sumo_drain_limit_seconds": "1800",
+
+    # Arrival rates
+    "arrival_rate_lane1": "0.07",
+    "arrival_rate_lane2": "0.08",
+    "arrival_rate_lane3": "0.06",
+    "arrival_rate_lane4": "0.07",
+
+    # SUMO vehicle-type maximum speeds (km/h)
+    "speed_bike_kmh": "45",
+    "speed_car_kmh": "60",
+    "speed_bus_kmh": "40",
+    "speed_truck_kmh": "35",
+
+    # PCU values
+    "pcu_bike": "0.5",
+    "pcu_car": "1",
+    "pcu_bus": "3",
+    "pcu_truck": "3",
+
+    # Crossing times
+    "crossing_bike_seconds": "1",
+    "crossing_car_seconds": "2",
+    "crossing_bus_seconds": "4",
+    "crossing_truck_seconds": "5",
+
+    "seed": "42",
+
+    # YOLO settings
+    "detection_interval_seconds": "2",
+    "sumo_step_length": "1",
+    "sumo_gui": "true",
+
+    # SUMO view
+    "sumo_view_min_x": "50",
+    "sumo_view_min_y": "50",
+    "sumo_view_max_x": "190",
+    "sumo_view_max_y": "190",
+
+    "sumo_image_size": "640",
+    "sumo_zoom": "500",
+
+    "yolo_weights": "python/sumo_mode/weights/best.pt",
+    "yolo_confidence": "0.25",
+}
+
+
+def load_config(path="config.ini"):
+    values = DEFAULTS.copy()
+
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as file:
+            for line in file:
+                line = line.strip()
+
+                if (
+                    line
+                    and not line.startswith(("#", ";", "["))
+                    and "=" in line
+                ):
+                    key, value = line.split("=", 1)
+                    values[key.strip()] = value.strip()
+
+    return values
+
+
+def number(cfg, key):
+    return float(cfg[key])
