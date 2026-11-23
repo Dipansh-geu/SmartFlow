@@ -3,19 +3,26 @@
 
 #include <string>
 
-class Vehicle
-{
+class Vehicle {
 private:
     std::string type;
-    int weight;
+    double pcu;
     int crossingTime;
+    double arrivalTime;
 
 public:
-    Vehicle(std::string type,int weight,int crossingTime);
+    Vehicle(
+        const std::string& type,
+        double pcu,
+        int crossingTime,
+        double arrivalTime = 0.0
+    );
 
-    int getWeight();
-    int getCrossingTime();
-    std::string getType();
+    double getPCU() const;
+    int getCrossingTime() const;
+
+    const std::string& getType() const;
+    double getArrivalTime() const;
 };
 
 #endif
