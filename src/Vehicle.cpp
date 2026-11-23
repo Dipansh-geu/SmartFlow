@@ -1,23 +1,34 @@
 #include "../include/Vehicle.h"
 
-Vehicle::Vehicle(std::string type,int weight,int crossingTime)
+Vehicle::Vehicle(
+    const std::string& type,
+    double pcu,
+    int crossingTime,
+    double arrivalTime
+)
+    : type(type),
+      pcu(pcu),
+      crossingTime(crossingTime),
+      arrivalTime(arrivalTime)
 {
-    this->type=type;
-    this->weight=weight;
-    this->crossingTime=crossingTime;
 }
 
-int Vehicle::getWeight()
+double Vehicle::getPCU() const
 {
-    return weight;
+    return pcu;
 }
 
-int Vehicle::getCrossingTime()
+int Vehicle::getCrossingTime() const
 {
     return crossingTime;
 }
 
-std::string Vehicle::getType()
+const std::string& Vehicle::getType() const
 {
     return type;
+}
+
+double Vehicle::getArrivalTime() const
+{
+    return arrivalTime;
 }
