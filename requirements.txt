@@ -1,0 +1,7 @@
+pandas
+matplotlib
+pillow
+opencv-python
+ultralytics
+traci
+sumolib
